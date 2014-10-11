@@ -1,13 +1,9 @@
+from __future__ import division
 __author__ = 'Luke'
 
-import math
 import numpy as np
-from sklearn import cross_validation
-from sklearn import tree
-from sklearn.datasets import load_iris
 from sklearn import datasets
-from sklearn.externals.six import StringIO
-
+import classifier as cls
 
 def main():
 
@@ -30,36 +26,36 @@ def main():
 
     # Add the new column
     data = np.hstack((data, iris.data))
+    data = np.hstack((data, np.reshape(iris.target, (-1, 1))))
 
+    total_correct = 0
+    total = 0
     # Iterate through the users leaving one out at a time
     for ignoredUserId in range(0, 7):
+
         # Pass the data, and the ignored user ID
-        classifier = getClassifierLeaveOneOut(data, ignoredUserId)
+        classifier = cls.getClassifierLeaveOneOut(data, ignoredUserId)
 
         # Get the test set
-        testSet = data[data[:, 0] == ignoredUserId, :]
+        original_test = data[data[:, 0] == ignoredUserId, :]
+        test_set = original_test[:, 0:-1]
+        correct_values = original_test[:, -1]
 
         # Predict the value based on the classifier
-        prediction = classifier.predict(testSet)
+        prediction = classifier.predict(test_set)
 
-def getTrainingDataLeaveOneOut(rawMatrix, ignoredUser):
-    #getting all the samples for all users except the ignored one
-    relevantMatrix = rawMatrix[rawMatrix[:,0] != ignoredUser, :]
+        # Fina any differences
+        diff = correct_values - prediction
+        correct = len(np.where(diff == 0)[0])
+        total_correct += correct
+        total += len(correct_values)
 
-    #remove the label column
-    featureMatrix = relevantMatrix[:, 0:-1]
-    #label column
-    valueArray = relevantMatrix[:, -1]
 
-    return (featureMatrix, valueArray)
+        print("User: " + str(ignoredUserId))
+        print("Correct: " + str(total_correct))
+        print("Wrong: " + str(total-total_correct))
 
-def getClassifier(samples, target):
-    clf = tree.DecisionTreeClassifier()
-    return clf.fit(samples, target)
-
-def getClassifierLeaveOneOut(rawMatrix, ignoredUser):
-    trainingData = getTrainingDataLeaveOneOut(rawMatrix, ignoredUser)
-    return getClassifier(trainingData[0], trainingData[1])
+    print("Accuracy: " + str(total_correct/total))
 
 if __name__ == "__main__":
     main()
