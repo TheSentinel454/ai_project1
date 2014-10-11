@@ -53,13 +53,13 @@ def main():
         correct_values = testData[:-1]
 
         # Predict the value based on the classifier
-        predictAll(classifiers, allTestData, correct_values)
+        results = predictAll(classifiers, allTestData, correct_values)
 
-        # Fina any differences
-        """for type, result in results.iteritems():
+        # Find any differences
+        for type, result in results.iteritems():
             total_correct[type] += result[0]
             total[type] += result[1]
-        """
+
     for type, correct in total_correct.iteritems():
         print("Accuracy for " + str(type) + ": " + str(correct/total[type]))
 
@@ -87,6 +87,23 @@ def getAllTrainingSamples(training_data):
 def getAllTestData(test_data):
     testData = {}
 
+    raw_testing_sample = test_data[:, 1:-4]
+    ex_feature1 = test_data[:, -4]
+    ex_feature2 = test_data[:, -3]
+    ex_feature3 = test_data[:, -2]
+
+    testing_sample_1 = np.hstack((raw_testing_sample, np.reshape(ex_feature1, (-1, 1))))
+    testing_sample_2 = np.hstack((raw_testing_sample, np.reshape(ex_feature2, (-1, 1))))
+    testing_sample_3 = np.hstack((raw_testing_sample, np.reshape(ex_feature3, (-1, 1))))
+    testing_sample_all = test_data[:, 1:-1]
+
+    testData[raw] = raw_testing_sample
+    testData[feat1] = testing_sample_1
+    testData[feat2] = testing_sample_2
+    testData[feat3] = testing_sample_3
+    testData[all] = testing_sample_all
+
+    return testData
     
 
 def predictAll(classifiers, test_data, test_label):
@@ -94,7 +111,7 @@ def predictAll(classifiers, test_data, test_label):
     size = len(test_label)
 
     for type, classifier in classifiers.iteritems():
-        correct = predict(classifier, test_data, test_label)
+        correct = predict(classifier, test_data[type], test_label)
         all_result[type] = correct
 
     return all_result
