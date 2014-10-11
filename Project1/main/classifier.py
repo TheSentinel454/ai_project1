@@ -23,8 +23,8 @@ def getClassifierLeaveOneOut(rawMatrix, ignoredUser):
 
 def getAllClassifiers(sampleSet, label):
     classifiers = {}
-    clf = tree.DecisionTreeClassifier()
     for type, sample in sampleSet.iteritems():
+        clf = tree.DecisionTreeClassifier()
         classifiers[type] = clf.fit(sample, label)
 
     return classifiers

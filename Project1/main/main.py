@@ -50,15 +50,15 @@ def main():
         # Get the test set
         testData = data[data[:, 0] == ignoredUserId, :]
         allTestData = getAllTestData(testData)
-        correct_values = testData[:-1]
+        correct_values = testData[:, -1]
 
         # Predict the value based on the classifier
         results = predictAll(classifiers, allTestData, correct_values)
 
         # Find any differences
         for type, result in results.iteritems():
-            total_correct[type] += result[0]
-            total[type] += result[1]
+            total_correct[type] = total_correct[type] + result[0]
+            total[type] = total[type] + result[1]
 
     for type, correct in total_correct.iteritems():
         print("Accuracy for " + str(type) + ": " + str(correct/total[type]))
@@ -112,7 +112,7 @@ def predictAll(classifiers, test_data, test_label):
 
     for type, classifier in classifiers.iteritems():
         correct = predict(classifier, test_data[type], test_label)
-        all_result[type] = correct
+        all_result[type] = correct, size
 
     return all_result
 
