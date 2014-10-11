@@ -1,0 +1,25 @@
+\begin{thebibliography}{1}
+
+\bibitem{clawson2006mobile}
+JAMES Clawson, Kent Lyons, Edward Clarkson, and Thad Starner.
+\newblock Mobile text entry: An empirical study and analysis of mini--qwerty
+  keyboards.
+\newblock {\em Submitted to the Transaction on Computer Human Interaction
+  Journal}, 2006.
+
+\bibitem{clawson2008automatic}
+James Clawson, Kent Lyons, Alex Rudnick, Robert~A Iannucci~Jr, and Thad
+  Starner.
+\newblock Automatic whiteout++: correcting mini-qwerty typing errors using
+  keypress timing.
+\newblock In {\em Proceedings of the SIGCHI Conference on Human Factors in
+  Computing Systems}, pages 573--582. ACM, 2008.
+
+\bibitem{soukoreff2004towards}
+R~William Soukoreff and I~Scott MacKenzie.
+\newblock Towards a standard for pointing device evaluation, perspectives on 27
+  years of fitts’ law research in hci.
+\newblock {\em International journal of human-computer studies},
+  61(6):751--789, 2004.
+
+\end{thebibliography}
