@@ -20,3 +20,11 @@ def getClassifier(samples, target):
 def getClassifierLeaveOneOut(rawMatrix, ignoredUser):
     trainingData = getTrainingDataLeaveOneOut(rawMatrix, ignoredUser)
     return getClassifier(trainingData[0], trainingData[1])
+
+def getAllClassifiers(sampleSet, label):
+    classifiers = {}
+    clf = tree.DecisionTreeClassifier()
+    for type, sample in sampleSet.iteritems():
+        classifiers[type] = clf.fit(sample, label)
+
+    return classifiers

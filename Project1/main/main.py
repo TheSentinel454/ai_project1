@@ -4,6 +4,13 @@ __author__ = 'Luke'
 import numpy as np
 from sklearn import datasets
 import classifier as cls
+import collections
+
+raw = "raw"
+feat1 = "feat1"
+feat2 = "feat2"
+feat3 = "feat3"
+all = "all"
 
 def main():
 
@@ -28,34 +35,76 @@ def main():
     data = np.hstack((data, iris.data))
     data = np.hstack((data, np.reshape(iris.target, (-1, 1))))
 
-    total_correct = 0
-    total = 0
+    total_correct = collections.defaultdict(int)
+    total = collections.defaultdict(int)
+
     # Iterate through the users leaving one out at a time
     for ignoredUserId in range(0, 7):
 
-        # Pass the data, and the ignored user ID
-        classifier = cls.getClassifierLeaveOneOut(data, ignoredUserId)
+        #get the training set
+        training_data = data[data[:, 0] != ignoredUserId, :]
+        training_label = training_data[:, -1]
+
+        classifiers = cls.getAllClassifiers(getAllTrainingSamples(training_data), training_label)
 
         # Get the test set
-        original_test = data[data[:, 0] == ignoredUserId, :]
-        test_set = original_test[:, 0:-1]
-        correct_values = original_test[:, -1]
+        testData = data[data[:, 0] == ignoredUserId, :]
+        allTestData = getAllTestData(testData)
+        correct_values = testData[:-1]
 
         # Predict the value based on the classifier
-        prediction = classifier.predict(test_set)
+        predictAll(classifiers, allTestData, correct_values)
 
         # Fina any differences
-        diff = correct_values - prediction
-        correct = len(np.where(diff == 0)[0])
-        total_correct += correct
-        total += len(correct_values)
+        """for type, result in results.iteritems():
+            total_correct[type] += result[0]
+            total[type] += result[1]
+        """
+    for type, correct in total_correct.iteritems():
+        print("Accuracy for " + str(type) + ": " + str(correct/total[type]))
 
+def getAllTrainingSamples(training_data):
+    trainingSamples = {}
 
-        print("User: " + str(ignoredUserId))
-        print("Correct: " + str(total_correct))
-        print("Wrong: " + str(total-total_correct))
+    raw_training_sample = training_data[:, 1:-4]
+    ex_feature1 = training_data[:, -4]
+    ex_feature2 = training_data[:, -3]
+    ex_feature3 = training_data[:, -2]
 
-    print("Accuracy: " + str(total_correct/total))
+    training_sample_1 = np.hstack((raw_training_sample, np.reshape(ex_feature1, (-1, 1))))
+    training_sample_2 = np.hstack((raw_training_sample, np.reshape(ex_feature2, (-1, 1))))
+    training_sample_3 = np.hstack((raw_training_sample, np.reshape(ex_feature3, (-1, 1))))
+    training_sample_all = training_data[:, 1:-1]
+
+    trainingSamples[raw] = raw_training_sample
+    trainingSamples[feat1] = training_sample_1
+    trainingSamples[feat2] = training_sample_2
+    trainingSamples[feat3] = training_sample_3
+    trainingSamples[all] = training_sample_all
+
+    return trainingSamples
+
+def getAllTestData(test_data):
+    testData = {}
+
+    
+
+def predictAll(classifiers, test_data, test_label):
+    all_result = {}
+    size = len(test_label)
+
+    for type, classifier in classifiers.iteritems():
+        correct = predict(classifier, test_data, test_label)
+        all_result[type] = correct
+
+    return all_result
+
+def predict(classifier, test_data, test_label):
+    prediction = classifier.predict(test_data)
+    diff = test_label - prediction
+    correct = len(np.where(diff == 0)[0])
+
+    return correct
 
 if __name__ == "__main__":
     main()
