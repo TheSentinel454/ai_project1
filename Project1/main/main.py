@@ -45,11 +45,11 @@ def main():
         training_data = data[data[:, 0] != ignoredUserId, :]
         training_label = training_data[:, -1]
 
-        classifiers = cls.getAllClassifiers(getAllTrainingSamples(training_data), training_label)
+        classifiers = cls.getAllClassifiers(splitDataOnFeatures(training_data), training_label)
 
         # Get the test set
         testData = data[data[:, 0] == ignoredUserId, :]
-        allTestData = getAllTestData(testData)
+        allTestData = splitDataOnFeatures(testData)
         correct_values = testData[:, -1]
 
         # Predict the value based on the classifier
@@ -63,47 +63,26 @@ def main():
     for type, correct in total_correct.iteritems():
         print("Accuracy for " + str(type) + ": " + str(correct/total[type]))
 
-def getAllTrainingSamples(training_data):
-    trainingSamples = {}
+def splitDataOnFeatures(data):
+    finalData = {}
 
-    raw_training_sample = training_data[:, 1:-4]
-    ex_feature1 = training_data[:, -4]
-    ex_feature2 = training_data[:, -3]
-    ex_feature3 = training_data[:, -2]
+    raw_data = data[:, 1:-4]
+    ex_feature1 = data[:, -4]
+    ex_feature2 = data[:, -3]
+    ex_feature3 = data[:, -2]
 
-    training_sample_1 = np.hstack((raw_training_sample, np.reshape(ex_feature1, (-1, 1))))
-    training_sample_2 = np.hstack((raw_training_sample, np.reshape(ex_feature2, (-1, 1))))
-    training_sample_3 = np.hstack((raw_training_sample, np.reshape(ex_feature3, (-1, 1))))
-    training_sample_all = training_data[:, 1:-1]
+    feature_1 = np.hstack((raw_data, np.reshape(ex_feature1, (-1, 1))))
+    feature_2 = np.hstack((raw_data, np.reshape(ex_feature2, (-1, 1))))
+    feature_3 = np.hstack((raw_data, np.reshape(ex_feature3, (-1, 1))))
+    feature_all = data[:, 1:-1]
 
-    trainingSamples[raw] = raw_training_sample
-    trainingSamples[feat1] = training_sample_1
-    trainingSamples[feat2] = training_sample_2
-    trainingSamples[feat3] = training_sample_3
-    trainingSamples[all] = training_sample_all
+    finalData[raw] = raw_data
+    finalData[feat1] = feature_1
+    finalData[feat2] = feature_2
+    finalData[feat3] = feature_3
+    finalData[all] = feature_all
 
-    return trainingSamples
-
-def getAllTestData(test_data):
-    testData = {}
-
-    raw_testing_sample = test_data[:, 1:-4]
-    ex_feature1 = test_data[:, -4]
-    ex_feature2 = test_data[:, -3]
-    ex_feature3 = test_data[:, -2]
-
-    testing_sample_1 = np.hstack((raw_testing_sample, np.reshape(ex_feature1, (-1, 1))))
-    testing_sample_2 = np.hstack((raw_testing_sample, np.reshape(ex_feature2, (-1, 1))))
-    testing_sample_3 = np.hstack((raw_testing_sample, np.reshape(ex_feature3, (-1, 1))))
-    testing_sample_all = test_data[:, 1:-1]
-
-    testData[raw] = raw_testing_sample
-    testData[feat1] = testing_sample_1
-    testData[feat2] = testing_sample_2
-    testData[feat3] = testing_sample_3
-    testData[all] = testing_sample_all
-
-    return testData
+    return finalData
     
 
 def predictAll(classifiers, test_data, test_label):
