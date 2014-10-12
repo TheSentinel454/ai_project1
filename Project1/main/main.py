@@ -5,6 +5,12 @@ import numpy as np
 from sklearn import datasets
 import classifier as cls
 import collections
+import arff
+import weka.core.jvm as jvm
+#import weka.core.converters as conv
+from weka.core.converters import Loader
+from weka.classifiers import Classifier
+from scipy.io.arff import loadarff
 
 raw = "raw"
 feat1 = "feat1"
@@ -14,11 +20,35 @@ all = "all"
 
 def main():
 
+    '''
+    jvm.start(class_path=['/Users/i825922/Desktop/python-weka-wrapper.jar', '/Users/i825922/Desktop/weka.jar'])
+    loader = Loader(classname="weka.core.converters.ArffLoader")
+    data = loader.load_file("test2.arff")
+    print("Number of Attributes: " + str(data.num_attributes()))
+    print("Number of Items: " + str(data.num_instances()))
+    data.set_class_index(data.num_attributes() - 1)
+    print(data)
+    c = Classifier(classname='weka.classifiers.trees.J48', options=['-C', '0.3'])
+    c.build_classifier(data)
+
+    loader = conv.loader_for_file('testoneuser.arff')
+    data = loader.load_file('testoneuser.arff')
+    '''
+
     # TODO: Load the data set, and extract the features
     '''
 
+    '''
 
     '''
+    dataset = loadarff(open('testoneuser.arff', 'r'))
+    data = dataset[0]
+    #print("Data Length: " + len(data))
+
+    v = data['rollon']
+    print("Data: " + str(v))
+    '''
+
     # Temporary: Load the data set
     iris = datasets.load_iris()
 
@@ -103,4 +133,7 @@ def predict(classifier, test_data, test_label):
     return correct
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception, e:
+        print(e)
