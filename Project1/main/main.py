@@ -20,20 +20,24 @@ all = "all"
 
 def main():
 
-    '''
-    jvm.start(class_path=['/Users/i825922/Desktop/python-weka-wrapper.jar', '/Users/i825922/Desktop/weka.jar'])
+    jvm.start(class_path=['./python-weka-wrapper.jar', './weka.jar'],max_heap_size="1024m")
+
     loader = Loader(classname="weka.core.converters.ArffLoader")
-    data = loader.load_file("test2.arff")
+    data = loader.load_file("testoneuser.arff")
     print("Number of Attributes: " + str(data.num_attributes()))
     print("Number of Items: " + str(data.num_instances()))
-    data.set_class_index(data.num_attributes() - 1)
-    print(data)
+
+    #a = data.get_attribute(0)
+
+    data.set_class_index(0)#data.num_attributes() - 1)
+
+    #print(data)
     c = Classifier(classname='weka.classifiers.trees.J48', options=['-C', '0.3'])
     c.build_classifier(data)
 
-    loader = conv.loader_for_file('testoneuser.arff')
-    data = loader.load_file('testoneuser.arff')
-    '''
+    #loader = conv.loader_for_file('testoneuser.arff')
+    #data = loader.load_file('testoneuser.arff')
+
 
     # TODO: Load the data set, and extract the features
     '''
