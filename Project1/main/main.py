@@ -5,12 +5,8 @@ import numpy as np
 from sklearn import datasets
 import classifier as cls
 import collections
-import arff
 import weka.core.jvm as jvm
-#import weka.core.converters as conv
 from weka.core.converters import Loader
-from weka.classifiers import Classifier
-from scipy.io.arff import loadarff
 
 raw = "raw"
 feat1 = "feat1"
@@ -27,17 +23,11 @@ def main():
     print("Number of Attributes: " + str(data.num_attributes()))
     print("Number of Items: " + str(data.num_instances()))
 
-    #a = data.get_attribute(0)
-
-    data.set_class_index(0)#data.num_attributes() - 1)
+    data.set_class_index(0)
 
     #print(data)
-    c = Classifier(classname='weka.classifiers.trees.J48', options=['-C', '0.3'])
-    c.build_classifier(data)
-
-    #loader = conv.loader_for_file('testoneuser.arff')
-    #data = loader.load_file('testoneuser.arff')
-
+    #c = Classifier(classname='weka.classifiers.trees.J48', options=['-C', '0.3'])
+    #c.build_classifier(data)
 
     # TODO: Load the data set, and extract the features
     '''
