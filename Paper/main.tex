@@ -44,7 +44,7 @@ The most relevant work done in this particular area was done with Automatic Whit
 
 With all that being said, the correction accuracy can be further improved by adding some additional features to the decision tree.  Physical limitations of the thumb and fingers while typing can have a great affect on the accuracy of said typing.  This can be classified in a feature and utilized to better train a decision tree to more accurately predict errors while typing.  This was not mentioned in the Automatic Whiteout++ implementation, and should allow for better prediction of typing errors.
 
-\section{Implementation}
+\section{Approach}
 In this proposal, we will add a 'keyboard division' feature to classify the four types of error: repeats, roll-on, roll-off, and substitution - specifically the section of the keyboard the key belongs to. We aim to use at least the following three heuristics to divide the keyboard into sections:
 \begin{itemize}
 \item 3X3 rectangular grid
@@ -73,6 +73,9 @@ F-measure is not a good evaluator in this case, since a wrong correction constit
 We will also look specifically at off-by-one errors as they constitute a large percentage of the total errors.
 
 We expect our algorithm to perform better than Automatic Whiteout++ on row substitution errors (since that is what our modified algorithm targets), specifically by reducing the average number of wrong corrections.
+
+\section{Discussion}
+
 
 \bibliographystyle{plain}
 \bibliography{main}
