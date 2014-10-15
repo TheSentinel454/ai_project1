@@ -2,7 +2,7 @@
 %2345678901234567890123456789012345678901234567890123456789012345678901234567890
 %        1         2         3         4         5         6         7         8
 
-\documentclass[letterpaper, 9 pt, conference]{ieeeconf}  % Comment this line out
+\documentclass[letterpaper, 10 pt, conference]{ieeeconf}  % Comment this line out
                                                           % if you need a4paper
 %\documentclass[a4paper, 10pt, conference]{ieeeconf}      % Use this line for a4
                                                           % paper
@@ -21,7 +21,7 @@
 \usepackage{subcaption}
 
 \title{\LARGE \bf
-Improving Automatic Whiteout++ through Zonal Division of Keyboard
+Improving Automatic Whiteout++ through Feature Selection
 }
 
 \author{Team 3}
@@ -45,37 +45,169 @@ The most relevant work done in this particular area was done with Automatic Whit
 With all that being said, the correction accuracy can be further improved by adding some additional features to the decision tree.  Physical limitations of the thumb and fingers while typing can have a great affect on the accuracy of said typing.  This can be classified in a feature and utilized to better train a decision tree to more accurately predict errors while typing.  This was not mentioned in the Automatic Whiteout++ implementation, and should allow for better prediction of typing errors.
 
 \section{Approach}
-In this proposal, we will add a 'keyboard division' feature to classify the four types of error: repeats, roll-on, roll-off, and substitution - specifically the section of the keyboard the key belongs to. We aim to use at least the following three heuristics to divide the keyboard into sections:
+
+\subsection{Feature Selection}
+
+Automatic Whiteout++ incorporates 82 features, including bi-gram and tri-gram probabilities of letters and timing of key presses before and after the character in question.
+
+We envisioned two types of features to improve the performance of the error detector.
+
+\subsubsection{Keyboard division}
+
+These features are based on our aim to encode the position of the key on the keyboard. Certain regions could be more conducive to errors due to difficulty of reaching that area. Hence we propose 3 different features for keyboard division:
 \begin{itemize}
 \item 3X3 rectangular grid
-\item Concentric circles centered at the bottom two corners of the phone to mimic thumb range (Figure 1)
-\item Concentric circles with centers as the default position of the thumb when the phone is held (Figure 2)
+\item Distance of the key from the bottom two corners of the phone to mimic thumb range (\ref{fig:divfeature2})
+\item Distance of the key from the default position of the thumb when the phone is held (\ref{fig:divfeature3})
 \end{itemize}
 
-\begin{figure}
-	\centering
-	\includegraphics[scale=0.5]{heuristics}
+\begin{figure}[!h]
+    \centering
+    \includegraphics[scale=0.8]{heuristic2.png}
+    \caption{Distance from the bottom corners of the keyboard}
+    \label{fig:divfeature2}
 \end{figure}
 
-By defining this new feature (in different ways), we hope to enhance the ratio of error detection, especially for substitution. Weka algorithms will be implemented by learning decision trees to detect the errors.
+\begin{figure}[!h]
+    \centering
+    \includegraphics[scale=0.8]{heuristic3.png}
+    \caption{Distance from the default position of the thumb}
+    \label{fig:divfeature3}
+\end{figure}
+
+\subsubsection{Insertion and Substitution probabilities}
+Kernighan et al\cite{kernighan1990spelling} computed a set of confusion tables for different types of spelling errors - deletions, insertions, substitutions and transpositions. The tables were computed based on data from the Associated Press (AP) newswire. The ones that are of interest to us are insertions and substitutions. The values in the respective tables denote probability of inserting character $X$ given that the previous character was $Y$ and the probability of substituting character $X$ with $Y$ respectively. 
+
+For each character in the alphabet, we calculate the probability of it being inserted as an error, and the probability of inserting an error character after it using the following formulae:
+
+If insertions$[X,Y]$ = count[inserting $Y$ after $X$],
+
+then we can compute
+
+\begin{align*}
+p_{inserted}[X] = \frac{\sum\limits_{X=a}^{z} insertions[X,Y]}{\sum\limits_{X=a}^{z} \sum\limits_{Y=a}^{z}insertions[X,Y]}\\
+p_{insert-error-after}[X] = \frac{\sum\limits_{Y=a}^{z} insertions[X,Y]}{\sum\limits_{X=a}^{z} \sum\limits_{Y=a}^{z}insertions[X,Y]}
+\end{align*}
+
+Similarly, we can compute the probability of a character being present due to the substitution of the actual correct character as follows:
+
+\begin{align*}
+p_{substitution}[X] = \frac{\sum\limits_{Y=a}^{z} substitutions[X,Y]}{\sum\limits_{X=a}^{z} \sum\limits_{Y=a}^{z}substitutions[X,Y]}
+\end{align*}
+
+So, for each character we calculate 3 probabilities that we add as features.
+
+\subsection{Algorithm}
+
+Similar to Automatic Whiteout++, we decided to use decision trees to detect the errors. Given the number of features we have, decision trees are a good choice. Specifically, we used the J48 learning algorithm to build the decision tree.
 
 \section{Evaluation}
-Our evaluation will be done in a similar way to Clawson et al. We will use leave-one-out cross-validation to generate training and testing tests. Clawson et al used sliced the data set across various dimensions (user expertise, keyboards, visibility conditions and corpora) to test how well their algorithm generalizes. We will follow the same procedure.  Four data sets were collected for training and testing: Dell complete, Dell expert, Targus complete, and blind to test the validity of these features.
 
-For each slice, we will look at the following for every type of error mentioned above (roll-on, roll-off, key repeat, and row substitution):
+As Automatic Whiteout++, we used a set of experimental data that is an output of studies on the Dell and the Targus keyboards. The study was carried out with 14 participants and 400 minutes of typing for each. The Twidor software was used to carry out the typing experiment. A total of 42,340 phrases were collected which accounted for 1,261,791 phrases. The data was further processed and each key press was characterised as correct or error. This set of data was used for training and testing.
+
+We randomly separated 10\% of the data to constitute the test set and the remaining 90\% was used to train the model using the new features in conjunction with the old features of Automatic Whiteout++. Again similar to Automatic Whiteout++, we use the Weka J48 decision tree to train and model the data. Three models were built and tested with the same training and test data. While the first is the original Automatic Whiteout++ (we refer it as the baseline), the second and third are the models built by adding the keyboard division feature and then the probability features incrementally. So, the following models were compared:
 \begin{itemize}
-\item Average possible corrections
-\item Average corrections detected
-\item Average wrong corrections
+\item Automatic Whiteout++
+\item Automatic Whiteout++ + keyboard division features
+\item Automatic Whiteout++ + keyboard division features + substitution and insertion probability features
 \end{itemize}
 
-F-measure is not a good evaluator in this case, since a wrong correction constitutes a highly negative user experience, and hence cannot be weighted the same as a missed correction.  
-We will also look specifically at off-by-one errors as they constitute a large percentage of the total errors.
+For each of these models, we report their performance on the training set averaged across ten folds (10-fold cross-validation) and then on the test set using the respective trained model in the following 6 tables. Each table has metrics for the four types of the off-by-one error and for each type of error, we report the following metrics:
+\begin{itemize}
+\item TP: The number of actual errors that were correctly classified
+\item FN: The number of actual errors which were incorrectly classified as some other type of error of nonerror
+\item FP: The number of nonerrors that were classified as errors
+\item TP + TN: Total number of actual errors
+\item TP + FP: Total number of errors guessed
+\item Precision: Percentage of total classification as errors that were actual errors
+\item Recall: Percentage of total actual errors that were correctly classified
+\end{itemize}
 
-We expect our algorithm to perform better than Automatic Whiteout++ on row substitution errors (since that is what our modified algorithm targets), specifically by reducing the average number of wrong corrections.
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|c|c|c|} \hline
+& TP & TN & FP & TP+TN & TP+FP & Precision & Recall \\ \hline
+Roll-on & 2285 & 695 & 692 & 2980 & 2977 & 76.68\% & 76.76\% \\ \hline
+Roll-off & 2959 & 154 & 442 & 3113 & 3401 & 95.05\% & 87.00\% \\ \hline
+Repeat & 540 & 146 & 193 & 686 & 733 & 78.72\% & 73.67\% \\ \hline
+Substitute & 3014 & 954 & 2670 & 3968 & 5684 & 75.96\% & 53.03\% \\ \hline
+\end{tabular}
+\caption{Baseline - Cross Validation Metrics}
+\label{table:basecvm}
+\end{center}
+\end{table}
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|c|c|c|} \hline
+& TP & TN & FP & TP+TN & TP+FP & Precision & Recall \\ \hline
+Roll-on & 240 & 68 & 71 & 308 & 311 & 77.92\% & 77.17\% \\ \hline
+Roll-off & 366 & 13 & 46 & 379 & 412 & 96.57\% & 88.83\% \\ \hline
+Repeat & 68 & 13 & 28 & 81 & 96 & 83.95\% & 70.83\% \\ \hline
+Substitute & 363 & 116 & 290 & 479 & 653 & 75.78\% & 55.59\% \\ \hline
+\end{tabular}
+\caption{Baseline - Test Data Metrics}
+\label{table:basetdm}
+\end{center}
+\end{table}
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|c|c|c|} \hline
+& TP & TN & FP & TP+TN & TP+FP & Precision & Recall \\ \hline
+Roll-on & 2286 & 700 & 691 & 2986 & 2977 & 76.56\% & 76.79\% \\ \hline
+Roll-off & 2980 & 162 & 421 & 3142 & 3401 & 94.84\% & 87.62\% \\ \hline
+Repeat & 540 & 145 & 193 & 685 & 733 & 78.83\% & 73.67\% \\ \hline
+Substitute & 3006 & 1002 & 2678 & 4008 & 5684 & 75.00\% & 52.89\% \\ \hline
+\end{tabular}
+\caption{Division Features - Cross Validation Metrics}
+\label{table:divisioncvm}
+\end{center}
+\end{table}
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|c|c|c|} \hline
+& TP & TN & FP & TP+TN & TP+FP & Precision & Recall \\ \hline
+Roll-on & 242 & 66 & 69 & 308 & 311 & 78.57\% & 77.81\% \\ \hline
+Roll-off & 374 & 12 & 38 & 386 & 412 & 96.89\% & 90.78\% \\ \hline
+Repeat & 68 & 13 & 28 & 81 & 96 & 83.95\% & 70.83\% \\ \hline
+Substitute & 365 & 125 & 288 & 490 & 653 & 74.49\% & 55.90\% \\ \hline
+\end{tabular}
+\caption{Division Features - Test Data Metrics}
+\label{table:divisiontdm}
+\end{center}
+\end{table}
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|c|c|c|} \hline
+& TP & TN & FP & TP+TN & TP+FP & Precision & Recall \\ \hline
+Roll-on & 2282 & 707 & 695 & 2989 & 2977 & 76.35\% & 76.65\% \\ \hline
+Roll-off & 2977 & 166 & 424 & 3143 & 3401 & 94.72\% & 87.53\% \\ \hline
+Repeat & 523 & 129 & 210 & 652 & 733 & 80.21\% & 71.35\% \\ \hline
+Substitute & 3018 & 1002 & 2666 & 4020 & 5684 & 75.07\% & 53.10\% \\ \hline
+\end{tabular}
+\caption{All Features - Cross Validation Metrics}
+\label{table:allcvm}
+\end{center}
+\end{table}
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|c|c|c|} \hline
+& TP & TN & FP & TP+TN & TP+FP & Precision & Recall \\ \hline
+Roll-on & 242 & 67 & 69 & 309 & 311 & 78.32\% & 77.81\% \\ \hline
+Roll-off & 371 & 14 & 41 & 385 & 412 & 96.36\% & 90.05\% \\ \hline
+Repeat & 71 & 16 & 25 & 87 & 96 & 81.61\% & 73.96\% \\ \hline
+Substitute & 364 & 127 & 289 & 491 & 653 & 74.13\% & 55.74\% \\ \hline
+\end{tabular}
+\caption{All Features - Test Data Metrics}
+\label{table:alltdm}
+\end{center}
+\end{table}
 
 \section{Discussion}
-
 
 \bibliographystyle{plain}
 \bibliography{main}
