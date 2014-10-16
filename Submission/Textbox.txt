@@ -1,0 +1,10 @@
+Team No. 3
+
+Project Title: Improving Automatic Whiteout++ through Feature Selection
+
+Team Members: Luke Tornquist (GT ID: 901999542)
+                          Vinay Kola (GT ID: 903007644)
+                          Yuan Ma (GT ID: 903065319)
+                          Anurag Kyal (GT ID: 903040738)
+
+3rd Party Code: Weka
