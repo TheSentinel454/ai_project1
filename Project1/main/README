@@ -1,0 +1,20 @@
+How to add new features:
+
+To add the division features:
+
+$ python add_division_features.py <filename.arff>
+
+it will create <filename_divfeatures.arff>
+
+To add the probability features:
+$ python add_prob_features.py <filename.arff>
+
+it will create <filename_probfeatures.arff>
+
+so let's say for maybefinal.arff
+
+$ python add_division_features.py maybefinal.arff
+$ python add_prob_features.py maybefinal_divfeatures.arff
+
+will create 2 files - maybefinal_divfeatures.arff and maybefinal_divfeatures_probfeatures.arff which
+we can use for weka.
