@@ -63,14 +63,14 @@ These features are based on our aim to encode the position of the key on the key
 
 \begin{figure}[!h]
     \centering
-    \includegraphics[scale=0.8]{heuristic2.png}
+    \includegraphics[scale=0.5]{heuristic2.png}
     \caption{Distance from the bottom corners of the keyboard}
     \label{fig:divfeature2}
 \end{figure}
 
 \begin{figure}[!h]
     \centering
-    \includegraphics[scale=0.8]{heuristic3.png}
+    \includegraphics[scale=0.5]{heuristic3.png}
     \caption{Distance from the default position of the thumb}
     \label{fig:divfeature3}
 \end{figure}
@@ -103,24 +103,13 @@ Similar to Automatic Whiteout++, we decided to use decision trees to detect the 
 
 \section{Evaluation}
 
-As Automatic Whiteout++, we used a set of experimental data that is an output of studies on the Dell and the Targus keyboards. The study was carried out with 14 participants and 400 minutes of typing for each. The Twidor software was used to carry out the typing experiment. A total of 42,340 phrases were collected which accounted for 1,261,791 phrases. The data was further processed and each key press was characterised as correct or error. This set of data was used for training and testing.
+As Automatic Whiteout++, we used a set of experimental data that is an output of studies on two specific Dell and the Targus mini-QWERTY keyboards \cite{clawson2006mobile}. The study was carried out with 14 participants and 400 minutes of typing for each. The Twidor software was used to carry out the typing experiment. A total of 42,340 phrases were collected which accounted for 1,261,791 phrases. The data was further processed and each key press was characterised as correct or error. This set of data was used for training and testing.
 
-We randomly separated 10\% of the data to constitute the test set and the remaining 90\% was used to train the model using the new features in conjunction with the old features of Automatic Whiteout++. Again similar to Automatic Whiteout++, we use the Weka J48 decision tree to train and model the data. Three models were built and tested with the same training and test data. While the first is the original Automatic Whiteout++ (we refer it as the baseline), the second and third are the models built by adding the keyboard division feature and then the probability features incrementally. So, the following models were compared:
+We randomly separated 10\% of the data to constitute the test set and the remaining 90\% was used to train the model using the new features in conjunction with the old features of Automatic Whiteout++. Again similar to Automatic Whiteout++, we use the Weka J48 decision tree to train and model the data. Three models were built and tested with the same training and test data. While the first is the original Automatic Whiteout++ (we refer to it as the baseline), the second and third are the models built by adding the keyboard division feature and then the probability features incrementally. So, the following models were compared:
 \begin{itemize}
 \item Automatic Whiteout++
 \item Automatic Whiteout++ + keyboard division features
 \item Automatic Whiteout++ + keyboard division features + substitution and insertion probability features
-\end{itemize}
-
-For each of these models, we report their performance on the training set averaged across ten folds (10-fold cross-validation) and then on the test set using the respective trained model in the following 6 tables. Each table has metrics for the four types of the off-by-one error and for each type of error, we report the following metrics:
-\begin{itemize}
-\item TP: The number of actual errors that were correctly classified
-\item FN: The number of actual errors which were incorrectly classified as some other type of error of nonerror
-\item FP: The number of nonerrors that were classified as errors
-\item TP + TN: Total number of actual errors
-\item TP + FP: Total number of errors guessed
-\item Precision: Percentage of total classification as errors that were actual errors
-\item Recall: Percentage of total actual errors that were correctly classified
 \end{itemize}
 
 \begin{table}[h]
@@ -132,7 +121,7 @@ Roll-off & 2959 & 154 & 442 & 3113 & 3401 & 95.05\% & 87.00\% \\ \hline
 Repeat & 540 & 146 & 193 & 686 & 733 & 78.72\% & 73.67\% \\ \hline
 Substitute & 3014 & 954 & 2670 & 3968 & 5684 & 75.96\% & 53.03\% \\ \hline
 \end{tabular}
-\caption{Baseline - Cross Validation Metrics}
+\caption{Baseline - Training Cross Validation Metrics}
 \label{table:basecvm}
 \end{center}
 \end{table}
@@ -160,7 +149,7 @@ Roll-off & 2980 & 162 & 421 & 3142 & 3401 & 94.84\% & 87.62\% \\ \hline
 Repeat & 540 & 145 & 193 & 685 & 733 & 78.83\% & 73.67\% \\ \hline
 Substitute & 3006 & 1002 & 2678 & 4008 & 5684 & 75.00\% & 52.89\% \\ \hline
 \end{tabular}
-\caption{Division Features - Cross Validation Metrics}
+\caption{Division Features - Training Cross Validation Metrics}
 \label{table:divisioncvm}
 \end{center}
 \end{table}
@@ -179,6 +168,42 @@ Substitute & 365 & 125 & 288 & 490 & 653 & 74.49\% & 55.90\% \\ \hline
 \end{center}
 \end{table}
 
+For each of these models, we report their performance on the training set averaged across ten folds (10-fold cross-validation) and then on the test set using the respective trained model in the following 6 tables. Each table has metrics for the four types of the off-by-one errors and for each type of error, we report the following metrics:
+\begin{itemize}
+\item TP: The number of actual errors that were correctly classified
+\item FN: The number of actual errors which were incorrectly classified as some other type of error of nonerror
+\item FP: The number of nonerrors that were classified as errors
+\item TP + TN: Total number of actual errors
+\item TP + FP: Total number of errors guessed
+\item Precision: Percentage of total classification as errors that were actual errors
+\item Recall: Percentage of total actual errors that were correctly classified
+\end{itemize}
+
+\section{Discussion}
+
+\subsection{Division Feature Results}
+First, we look into the results of adding keyboard-division based features in Table \ref{table:divisioncvm} and Table \ref{table:divisiontdm}. 
+
+From the perspective of cross validation metrics, we have a slight decrement (0.12\%) in precision and a slight enhancement (0.03\%) in recall for roll-on. For roll-off,  we have a slight decrement (0.21\%) in precision and a slight enhancement (0.62\%) in recall. For repeat, we perform almost the same with baseline in precision and recall. And for row-subsititute, we get a bit worse result (0.96\% less) in precision and (0.14\% less) recall. 
+
+In the test data metrics, precision and recall increase slightly both for roll-on and roll-off. For repeat, precision and recall is on the same level. For row-substitute, our performance is worse in precision (1.29\% less) and better (0.31\% more) in recall.
+
+Considering that we focus more on row-substitute than other division features and the fact that we care more about precision than recall, the result is not as exciting as hoped, but some improvements were still made. The reason is that those three features are not important enough comparing with those original features. We added insert and substitution probability features hoping to improve the performance a bit further. 
+
+\subsection{Division + Probability Feature Results}
+Comparing the training cross validation metrics after the addition of both the new features in Table \ref{table:allcvm} with the baseline in Table \ref{table:basecvm}, the precision increases by 1.5\% for repeats while it is a bit worse for the other three types. Recall is slightly better for the roll-off and substitution errors and slightly worse for roll-on and repeats.
+
+Considering the test data metrics in Table \ref{table:alltdm} vs the test data metrics of the baseline in Table \ref{table:basetdm}, precision is improved by 1.4\% for roll-on but decreases for the other types. Recall performs consistently better for all the four types of errors and is better by 3.1\% for the repeats.
+
+Compared against the test data metrics with only the division features, all the precisions suffer a hit and all the recalls except for repeats also perform worse. It's worthwile to note that repeats was the only error type which showed no performance gain with the division features as compared to the baseline.
+
+Although the addition of the new features gave a better performance on the recall consistently, it negatively effected the precisions and thus calls for a trade-off.  Overall, the addition of the probability features improve performance over the baseline, but do not add any substantial improvement over the original division-based features and actually decrease some of the original improvements over the baseline.
+
+\subsection{Conclusion}
+This project's focus started out with the intention of looking solely at the division of the keyboard to increase error detection and in-turn error correction.  The keyboard division based features were expected to improve the substitution error detection, but actually improved the roll-on and roll-off error detection instead.  The amount of improvement was not as high as originally expected, so exploration was done on the topic to find other suitable features to test for improving error detection.
+
+This is when the project's focus expanded to include the insertion and substitution probabilities to see if this improved the error detection.  The results with these features were also not nearly as high as originally anticipated, but some improvements were still made.  This allowed us to really learn how to iterate over a list of viable hypotheses while working on projects and adapting to see which work better or worse than our original hypothesis.  That being said, there are other areas that should also be explored in order to further improve the accuracy and predictability of Automatic Whiteout++, and those will be covered in the next section.
+
 \begin{table}[h]
 \begin{center}
 \begin{tabular}{|l|c|c|c|c|c|c|c|} \hline
@@ -188,7 +213,7 @@ Roll-off & 2977 & 166 & 424 & 3143 & 3401 & 94.72\% & 87.53\% \\ \hline
 Repeat & 523 & 129 & 210 & 652 & 733 & 80.21\% & 71.35\% \\ \hline
 Substitute & 3018 & 1002 & 2666 & 4020 & 5684 & 75.07\% & 53.10\% \\ \hline
 \end{tabular}
-\caption{All Features - Cross Validation Metrics}
+\caption{Division + Probability Features - Training Cross Validation Metrics}
 \label{table:allcvm}
 \end{center}
 \end{table}
@@ -202,12 +227,14 @@ Roll-off & 371 & 14 & 41 & 385 & 412 & 96.36\% & 90.05\% \\ \hline
 Repeat & 71 & 16 & 25 & 87 & 96 & 81.61\% & 73.96\% \\ \hline
 Substitute & 364 & 127 & 289 & 491 & 653 & 74.13\% & 55.74\% \\ \hline
 \end{tabular}
-\caption{All Features - Test Data Metrics}
+\caption{Division + Probability Features - Test Data Metrics}
 \label{table:alltdm}
 \end{center}
 \end{table}
 
-\section{Discussion}
+\subsection{Future work}
+
+In this project, our efforts towards improving Automatic Whiteout++ were directed towards better feature selection, specifically, adding features based on keyboard division and substitution/insertion probabilities. We used the same classification algorithm, namely the J48 decision tree algorithm. Future work could compare the performance of other algorithms on the same set of features. One possible example that could be evaluated is random forests.\cite{breiman2001random}
 
 \bibliographystyle{plain}
 \bibliography{main}

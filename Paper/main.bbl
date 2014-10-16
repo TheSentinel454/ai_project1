@@ -1,5 +1,10 @@
 \begin{thebibliography}{1}
 
+\bibitem{breiman2001random}
+Leo Breiman.
+\newblock Random forests.
+\newblock {\em Machine learning}, 45(1):5--32, 2001.
+
 \bibitem{clawson2006mobile}
 JAMES Clawson, Kent Lyons, Edward Clarkson, and Thad Starner.
 \newblock Mobile text entry: An empirical study and analysis of mini--qwerty
@@ -14,6 +19,19 @@ James Clawson, Kent Lyons, Alex Rudnick, Robert~A Iannucci~Jr, and Thad
   keypress timing.
 \newblock In {\em Proceedings of the SIGCHI Conference on Human Factors in
   Computing Systems}, pages 573--582. ACM, 2008.
+
+\bibitem{hall2009wekas}
+Mark Hall, Eibe Frank, Geoffrey Holmes, Bernhard Pfahringer, Peter Reutemann,
+  and Ian~H Witten.
+\newblock The weka data mining software: an update.
+\newblock {\em ACM SIGKDD explorations newsletter}, 11(1):10--18, 2009.
+
+\bibitem{kernighan1990spelling}
+Mark~D Kernighan, Kenneth~W Church, and William~A Gale.
+\newblock A spelling correction program based on a noisy channel model.
+\newblock In {\em Proceedings of the 13th conference on Computational
+  linguistics-Volume 2}, pages 205--210. Association for Computational
+  Linguistics, 1990.
 
 \bibitem{soukoreff2004towards}
 R~William Soukoreff and I~Scott MacKenzie.
